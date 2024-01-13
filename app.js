@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const Todo = require("./api/models/todo");
-
 const todo = new Todo();
 
 app.use(cors());
