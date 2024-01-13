@@ -74,7 +74,6 @@ app.put("/todos/edit/:id", (req, res) => {
   if (foundTodo) {
     const updatedTodo = todo.updateTask(id, req.body);
     res.status(200).send(updatedTodo);
-    console.log(updatedTodo);
   } else {
     res.status(404).send("Not Found");
   }

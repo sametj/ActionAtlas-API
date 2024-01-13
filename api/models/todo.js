@@ -48,6 +48,7 @@ class Todo {
     const foundTodo = todos.find((todo) => todo.id === id);
     if (foundTodo) {
       foundTodo.task = updatedTodo.task;
+      foundTodo.completed = updatedTodo.completed;
       this.storeData(todos);
     }
   }
