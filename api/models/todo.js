@@ -1,6 +1,5 @@
 const path = "./data.json";
 const fs = require("fs");
-const { get } = require("http");
 
 class Todo {
   getTodo() {

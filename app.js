@@ -1,11 +1,24 @@
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
 const cors = require("cors");
 const Todo = require("./api/models/todo");
+const todoSchema = require("./api/models/todoSchema");
 const todo = new Todo();
+
+async function connectToDB() {
+  await mongoose.connect(
+    "mongodb+srv://sametj:Jamtem1224tope@sametjdatabase.le1coke.mongodb.net/?retryWrites=true&w=majority"
+  );
+}
+connectToDB();
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send(todo.getTodo());
+});
 
 app.get("/todos", (req, res) => {
   res.status(200).send(todo.getTodo());
@@ -16,7 +29,6 @@ app.get("/todos/:day", (req, res) => {
   const foundTodo = todo.getTodoByDay(day);
   if (foundTodo) {
     res.status(200).send(foundTodo);
-    console.log(foundTodo);
   } else {
     res.status(404).send("Not Found");
   }
@@ -43,6 +55,17 @@ app.get("/todos/:day/:tag", (req, res) => {
   }
 });
 
+app.post("/todos/storeData", (req, res) => {
+  let store = [todo.getTodo()];
+  store.forEach((element) => {
+    element.forEach((todo) => {
+      todoSchema.create(todo);
+    });
+  });
+
+  res.send(todoSchema.create(store));
+});
+
 app.post("/todos/addtask", (req, res) => {
   const newTodo = {
     id: `${Date.now()}`,
@@ -65,6 +88,12 @@ app.delete("/todos/delete/:id", (req, res) => {
   } else {
     res.status(404).send("Not Found");
   }
+});
+
+app.delete("/todos/deleteStored", (req, res) => {
+  todoSchema.deleteMany().then(() => {
+    res.send("Deleted");
+  });
 });
 
 app.put("/todos/edit/:id", (req, res) => {
