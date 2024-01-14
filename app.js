@@ -69,7 +69,7 @@ app.delete("/todos/deleteStored", (req, res) => {
 
 app.put("/todos/edit/:id", (req, res) => {
   const id = req.params.id;
-  todoSchema.updateOne({ id: id }, req.body).then(() => {
+  todoSchema.updateOne({ id }, req.body).then(() => {
     todoSchema.find({ id: id }).then((todos) => {
       res.send(todos);
     });
