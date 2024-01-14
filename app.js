@@ -2,9 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const Todo = require("./api/models/todo");
 const todoSchema = require("./api/models/todoSchema");
-const todo = new Todo();
 
 async function connectToDB() {
   await mongoose.connect(
@@ -16,57 +14,34 @@ connectToDB();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send(todo.getTodo());
-});
-
 app.get("/todos", (req, res) => {
-  res.status(200).send(todo.getTodo());
+  res.status(200).send(todoSchema.find());
 });
 
 app.get("/todos/:day", (req, res) => {
   const day = req.params.day;
-  const foundTodo = todo.getTodoByDay(day);
-  if (foundTodo) {
-    res.status(200).send(foundTodo);
-  } else {
-    res.status(404).send("Not Found");
-  }
+  todoSchema.find({ day: day }).then((todos) => {
+    res.send(todos);
+  });
 });
 
 app.get("/todos/filter/:tag", (req, res) => {
   const tag = req.params.tag;
-  const foundTodo = todo.getTodoByTag(tag);
-  if (foundTodo) {
-    res.status(200).send(foundTodo);
-  } else {
-    res.status(404).send("Not Found");
-  }
+  todoSchema.find({ tag: tag }).then((todos) => {
+    res.send(todos);
+  });
 });
 
 app.get("/todos/:day/:tag", (req, res) => {
   const day = req.params.day;
   const tag = req.params.tag;
-  const foundTodo = todo.getTodoByDayAndTag(day, tag);
-  if (foundTodo) {
-    res.status(200).send(foundTodo);
-  } else {
-    res.status(404).send("Not Found");
-  }
-});
-
-app.post("/todos/storeData", (req, res) => {
-  let store = [todo.getTodo()];
-  store.forEach((element) => {
-    element.forEach((todo) => {
-      todoSchema.create(todo);
-    });
+  todoSchema.find({ day: day, tag: tag }).then((todos) => {
+    res.send(todos);
   });
-
-  res.send(todoSchema.create(store));
 });
 
 app.post("/todos/addtask", (req, res) => {
+  const day = req.body.day;
   const newTodo = {
     id: `${Date.now()}`,
     task: req.body.task,
@@ -75,36 +50,30 @@ app.post("/todos/addtask", (req, res) => {
     completed: req.body.completed,
     dayAdded: `${Date.now()}`,
   };
-  const addedTodo = todo.add(newTodo);
-  res.status(201).send(todo.getTodoByDay(newTodo.day));
+  todoSchema.create(newTodo);
+  res.status(201).send(newTodo);
 });
 
 app.delete("/todos/delete/:id", (req, res) => {
   const id = req.params.id;
-  const foundTodo = todo.getTodoByID(id);
-  if (foundTodo) {
-    todo.deleteTask(id);
-    res.status(200).send(todo.getTodoByDay(foundTodo.day));
-  } else {
-    res.status(404).send("Not Found");
-  }
+  todoSchema.deleteOne({ id: id }).then(() => {
+    res.send({});
+  });
 });
 
 app.delete("/todos/deleteStored", (req, res) => {
   todoSchema.deleteMany().then(() => {
-    res.send("Deleted");
+    res.send("Deleted all todos");
   });
 });
 
 app.put("/todos/edit/:id", (req, res) => {
   const id = req.params.id;
-  const foundTodo = todo.getTodoByID(id);
-  if (foundTodo) {
-    const updatedTodo = todo.updateTask(id, req.body);
-    res.status(200).send(updatedTodo);
-  } else {
-    res.status(404).send("Not Found");
-  }
+  todoSchema.updateOne({ id: id }, req.body).then(() => {
+    todoSchema.find({ id: id }).then((todos) => {
+      res.send(todos);
+    });
+  });
 });
 
 app.listen(3000, () => {
