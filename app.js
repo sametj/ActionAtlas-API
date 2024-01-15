@@ -3,10 +3,13 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const todoSchema = require("./api/models/todoSchema");
+const userSchema = require("./api/models/userSchema");
+
+require("dotenv").config();
 
 async function connectToDB() {
   await mongoose.connect(
-    "mongodb+srv://sametj:Jamtem1224tope@sametjdatabase.le1coke.mongodb.net/?retryWrites=true&w=majority"
+    `mongodb+srv://sametj:${process.env.DATABASE_PASSWORD}@sametjdatabase.le1coke.mongodb.net/?retryWrites=true&w=majority`
   );
 }
 connectToDB();
@@ -14,34 +17,66 @@ connectToDB();
 app.use(cors());
 app.use(express.json());
 
-app.get("/todos", (req, res) => {
-  res.status(200).send(todoSchema.find());
+//get all user todos
+app.get("/:id/todos", (req, res) => {
+  const id = req.params.id;
+  userSchema.find({ id: id }).then((user) => {
+    res.send(user[0].todos);
+  });
 });
 
-app.get("/todos/:day", (req, res) => {
+//get user todos by day
+app.get("/:id/todos/:day", (req, res) => {
+  const id = req.params.id;
   const day = req.params.day;
-  todoSchema.find({ day: day }).then((todos) => {
-    res.send(todos);
+  userSchema.find({ id: id }).then((user) => {
+    res.send(user[0].todos.filter((todo) => todo.day === day));
   });
 });
 
-app.get("/todos/filter/:tag", (req, res) => {
+//get user todos by tag
+app.get("/:id/todos/filter/:tag", (req, res) => {
+  const id = req.params.id;
   const tag = req.params.tag;
-  todoSchema.find({ tag: tag }).then((todos) => {
-    res.send(todos);
+  userSchema.find({ id: id }).then((user) => {
+    res.send(user[0].todos.filter((todo) => todo.tag === tag));
   });
 });
 
-app.get("/todos/:day/:tag", (req, res) => {
-  const day = req.params.day;
-  const tag = req.params.tag;
-  todoSchema.find({ day: day, tag: tag }).then((todos) => {
-    res.send(todos);
+//creating user
+app.post("/user/create", (req, res) => {
+  userSchema.find({ username: req.body.username }).then((user) => {
+    if (user == "" || user == null) {
+      const newUser = {
+        id: `${Date.now()}`,
+        username: req.body.username,
+        password: req.body.password,
+        todos: [],
+      };
+      userSchema.create(newUser);
+      res.status(201).send(newUser);
+    } else {
+      res.send({ error: "User already exists" });
+    }
   });
 });
 
-app.post("/todos/addtask", (req, res) => {
-  const day = req.body.day;
+//login
+app.post("/user/login", (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  userSchema.find({ username: username, password: password }).then((user) => {
+    if (user == "" || user == null) {
+      res.send({ error: "User does not exist" });
+    } else {
+      res.send(user[0]);
+    }
+  });
+});
+
+//add todo to user
+app.put("/:id/addtodo", (req, res) => {
+  const id = req.params.id;
   const newTodo = {
     id: `${Date.now()}`,
     task: req.body.task,
@@ -50,32 +85,52 @@ app.post("/todos/addtask", (req, res) => {
     completed: req.body.completed,
     dayAdded: `${Date.now()}`,
   };
-  todoSchema.create(newTodo);
-  res.status(201).send(newTodo);
+  userSchema.updateOne({ id }, { $push: { todos: newTodo } }).then(() => {
+    res.send(newTodo);
+  });
 });
 
-app.delete("/todos/delete/:id", (req, res) => {
+//delete todo from user
+app.delete("/:id/deletetodo/:todoId", (req, res) => {
   const id = req.params.id;
-  todoSchema.deleteOne({ id: id }).then(() => {
+  const todoId = req.params.todoId;
+  userSchema
+    .updateOne({ id }, { $pull: { todos: { id: todoId } } })
+    .then(() => {
+      res.send({});
+    });
+});
+
+//delete all todos from user
+app.delete("/:id/deletetodos", (req, res) => {
+  const id = req.params.id;
+  userSchema.updateOne({ id }, { $set: { todos: [] } }).then(() => {
     res.send({});
   });
 });
 
-app.delete("/todos/deleteStored", (req, res) => {
-  todoSchema.deleteMany().then(() => {
-    res.send("Deleted all todos");
-  });
-});
-
-app.put("/todos/edit/:id", (req, res) => {
+//edit todo from user
+app.put("/:id/edittodo/:todoId", (req, res) => {
   const id = req.params.id;
-  todoSchema.updateOne({ id }, req.body).then(() => {
-    todoSchema.find({ id: id }).then((todos) => {
-      res.send(todos);
+  const todoId = req.params.todoId;
+  userSchema
+    .updateOne(
+      { id, "todos.id": todoId },
+      {
+        $set: {
+          "todos.$.task": req.body.task,
+          "todos.$.day": req.body.day,
+          "todos.$.tag": req.body.tag,
+          "todos.$.completed": req.body.completed,
+        },
+      }
+    )
+    .then(() => {
+      res.send({ todos: req.body });
     });
-  });
 });
 
+//server
 app.listen(3000, () => {
   console.log("Server is listening on port http://localhost:3000");
 });
