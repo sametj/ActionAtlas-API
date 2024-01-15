@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const todoSchema = require("./api/models/todoSchema");
+// const todoSchema = require("./api/models/todoSchema");
 const userSchema = require("./api/models/userSchema");
 
 require("dotenv").config();
@@ -45,16 +45,17 @@ app.get("/:id/todos/filter/:tag", (req, res) => {
 
 //creating user
 app.post("/user/create", (req, res) => {
-  userSchema.find({ username: req.body.username }).then((user) => {
+  userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
-      const newUser = {
+      const newUser = new userSchema({
         id: `${Date.now()}`,
         username: req.body.username,
+        email: req.body.email,
         password: req.body.password,
         todos: [],
-      };
-      userSchema.create(newUser);
-      res.status(201).send(newUser);
+      });
+      newUser.save();
+      res.status(201).send({ sucess: "User created", id: newUser.id });
     } else {
       res.send({ error: "User already exists" });
     }
@@ -63,13 +64,19 @@ app.post("/user/create", (req, res) => {
 
 //login
 app.post("/user/login", (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
   const password = req.body.password;
-  userSchema.find({ username: username, password: password }).then((user) => {
+  userSchema.find({ email: email }).then((user) => {
     if (user == "" || user == null) {
       res.send({ error: "User does not exist" });
     } else {
-      res.send(user[0]);
+      user[0].validatePassword(password).then((result) => {
+        if (result) {
+          res.send({ sucess: "Logged in", id: user[0].id });
+        } else {
+          res.send({ error: "Wrong password" });
+        }
+      });
     }
   });
 });
@@ -128,6 +135,33 @@ app.put("/:id/edittodo/:todoId", (req, res) => {
     .then(() => {
       res.send({ todos: req.body });
     });
+});
+
+//verify email
+app.put("/user/verifyemail", (req, res) => {
+  const email = req.body.email;
+  userSchema.find({ email: email }).then((user) => {
+    if (user[0].email != email) {
+      res.send({ error: "User does not exist" });
+    } else {
+      res.send({ sucess: "Account Found" });
+    }
+  });
+});
+
+//forgot password
+app.put("/user/forgotpassword", (req, res) => {
+  const email = req.body.email;
+  const newPassword = req.body.password;
+  userSchema.find({ email: email }).then((user) => {
+    if (user[0].email != email) {
+      res.send({ error: "User does not exist" });
+    } else {
+      user[0].password = newPassword;
+      user[0].save();
+      res.send({ sucess: "Password changed" });
+    }
+  });
 });
 
 //server
