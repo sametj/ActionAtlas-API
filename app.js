@@ -55,7 +55,11 @@ app.post("/user/register", (req, res) => {
         todos: [],
       });
       newUser.save();
-      res.status(201).send({ sucess: "User created", id: newUser.id });
+      res.status(201).send({
+        sucess: "User created",
+        id: newUser.id,
+        username: newUser.username,
+      });
     } else {
       res.send({ error: "User already exists" });
     }
@@ -72,7 +76,7 @@ app.post("/user/login", (req, res) => {
     } else {
       user[0].validatePassword(password).then((result) => {
         if (result) {
-          res.send({ sucess: "Logged in", id: user[0].id });
+          res.send(user[0]);
         } else {
           res.send({ error: "Wrong password" });
         }
