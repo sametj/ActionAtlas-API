@@ -164,6 +164,15 @@ app.put("/user/resetpassword", (req, res) => {
   });
 });
 
+//get checked todos
+app.get("/:id/todos/:day/completed", (req, res) => {
+  const id = req.params.id;
+  const day = req.params.day;
+  userSchema.find({ id: id, day: day }).then((user) => {
+    res.send(user[0].todos.filter((todo) => todo.completed === true));
+  });
+});
+
 //server
 app.listen(3000, () => {
   console.log("Server is listening on port http://localhost:3000");
