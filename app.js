@@ -150,7 +150,7 @@ app.put("/user/verifyemail", (req, res) => {
 });
 
 //forgot password
-app.put("/user/forgotpassword", (req, res) => {
+app.put("/user/resetpassword", (req, res) => {
   const email = req.body.email;
   const newPassword = req.body.password;
   userSchema.find({ email: email }).then((user) => {
