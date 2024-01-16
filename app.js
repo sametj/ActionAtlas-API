@@ -154,13 +154,9 @@ app.put("/user/resetpassword", (req, res) => {
   const email = req.body.email;
   const newPassword = req.body.password;
   userSchema.find({ email: email }).then((user) => {
-    if (user[0].email != email) {
-      res.send({ error: "User does not exist" });
-    } else {
-      user[0].password = newPassword;
-      user[0].save();
-      res.send({ sucess: "Password changed" });
-    }
+    user[0].password = newPassword;
+    user[0].save();
+    res.send({ sucess: "Password changed" });
   });
 });
 
