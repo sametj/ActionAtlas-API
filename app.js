@@ -44,7 +44,7 @@ app.get("/:id/todos/filter/:tag", (req, res) => {
 });
 
 //creating user
-app.post("/user/create", (req, res) => {
+app.post("/user/register", (req, res) => {
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
       const newUser = new userSchema({
