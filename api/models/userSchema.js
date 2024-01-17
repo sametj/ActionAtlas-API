@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-// const todoSchema = require("./todoSchema");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const SALT_WORK_FACTOR = 10;
 
