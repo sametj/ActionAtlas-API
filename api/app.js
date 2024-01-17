@@ -201,3 +201,5 @@ app.get("/:id/:day/pending", (req, res) => {
 app.listen(3000, () => {
   console.log("Server is listening on port http://localhost:3000");
 });
+
+module.exports = app;
