@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 // const todoSchema = require("./api/models/todoSchema");
-const userSchema = require("./api/models/userSchema");
+const userSchema = require("./models/userSchema");
 
 require("dotenv").config();
 
