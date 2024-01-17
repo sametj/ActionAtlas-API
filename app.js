@@ -4,6 +4,12 @@ const cors = require("cors");
 const userSchema = require("./api/models/userSchema");
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 require("dotenv").config();
 
@@ -13,13 +19,6 @@ async function connectToDB() {
   );
 }
 connectToDB();
-
-app.use(cors());
-app.use(express.json());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
 
 app.get("/", (req, res) => {
   res.send({ message: "Welcome to the API" });
@@ -68,7 +67,6 @@ app.post("/user/register", (req, res) => {
         id: newUser.id,
         username: newUser.username,
       });
-      userSchema.create(newUser);
     } else {
       res.send({ error: "User already exists" });
     }
