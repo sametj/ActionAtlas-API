@@ -2,10 +2,9 @@
   "name": "todoapi",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "./api/app.js",
   "scripts": {
-    "start": "nodemon ./api/app.js",
-    "vercel-build": "npm install && npm run build"
+    "start": "nodemon ./api/app.js"
   },
   "keywords": [],
   "author": "",

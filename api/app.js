@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-// const todoSchema = require("./api/models/todoSchema");
 const userSchema = require("./models/userSchema");
 
 require("dotenv").config();
@@ -16,11 +15,14 @@ connectToDB();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();
+});
+
+app.get("/", (req, res) => {
+  res.send({ message: "Welcome to the API" });
 });
 
 //get all user todos
@@ -196,7 +198,5 @@ app.get("/:id/:day/pending", (req, res) => {
 
 //server
 app.listen(3000, () => {
-  console.log("Server is listening on port https://localhost:3000");
+  console.log("Server is listening on port http://localhost:3000");
 });
-
-module.exports = app;
