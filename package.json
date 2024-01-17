@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon ./api/app.js"
+    "start": "nodemon ./api/app.js",
+    "vercel-build": "npm install && npm run build"
   },
   "keywords": [],
   "author": "",
