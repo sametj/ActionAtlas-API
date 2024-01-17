@@ -165,11 +165,26 @@ app.put("/user/resetpassword", (req, res) => {
 });
 
 //get checked todos
-app.get("/:id/todos/:day/completed", (req, res) => {
+app.get("/:id/:day/completed", (req, res) => {
   const id = req.params.id;
   const day = req.params.day;
-  userSchema.find({ id: id, day: day }).then((user) => {
-    res.send(user[0].todos.filter((todo) => todo.completed === true));
+  userSchema.find({ id: id }).then((user) => {
+    res.send(
+      user[0].todos.filter(
+        (todo) => todo.day === day && todo.completed === true
+      )
+    );
+  });
+});
+app.get("/:id/:day/pending", (req, res) => {
+  const id = req.params.id;
+  const day = req.params.day;
+  userSchema.find({ id: id }).then((user) => {
+    res.send(
+      user[0].todos.filter(
+        (todo) => todo.day === day && todo.completed === false
+      )
+    );
   });
 });
 
