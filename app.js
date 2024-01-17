@@ -69,6 +69,7 @@ app.post("/user/register", (req, res) => {
         id: newUser.id,
         username: newUser.username,
       });
+      userSchema.create(newUser);
     } else {
       res.send({ error: "User already exists" });
     }
