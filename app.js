@@ -60,6 +60,7 @@ app.get("/:id/todos/:day/:tag", (req, res) => {
 
 //creating user
 app.post("/user/register", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
       const newUser = new userSchema({
