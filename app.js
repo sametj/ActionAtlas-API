@@ -6,13 +6,14 @@ const app = express();
 
 const corsOptions = {
   origin: "https://action-atlas.vercel.app",
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "https://action-atlas.vercel.app");
   next();
 });
 
@@ -60,7 +61,7 @@ app.get("/:id/todos/:day/:tag", (req, res) => {
 
 //creating user
 app.post("/user/register", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "https://action-atlas.vercel.app");
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
       const newUser = new userSchema({
