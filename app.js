@@ -5,17 +5,15 @@ const userSchema = require("./api/models/userSchema");
 const app = express();
 
 app.use(cors());
-
+app.use(express.json());
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
+    "*",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
 });
-
-app.use(express.json());
 
 require("dotenv").config();
 
@@ -48,11 +46,14 @@ app.get("/:id/todos/:day", (req, res) => {
 });
 
 //get user todos by tag
-app.get("/:id/todos/filter/:tag", (req, res) => {
+app.get("/:id/todos/:day/:tag", (req, res) => {
   const id = req.params.id;
   const tag = req.params.tag;
+  const day = req.params.day;
   userSchema.find({ id: id }).then((user) => {
-    res.send(user[0].todos.filter((todo) => todo.tag === tag));
+    res.send(
+      user[0].todos.filter((todo) => todo.tag === tag && todo.day === day)
+    );
   });
 });
 
@@ -68,9 +69,9 @@ app.post("/user/register", (req, res) => {
         todos: [],
       });
       newUser.save();
-      userSchema.create(newUser);
       res.status(201).send({
-        newUser,
+        sucess: "Account created",
+        user: newUser,
       });
     } else {
       res.send({ error: "User already exists" });
@@ -200,6 +201,11 @@ app.get("/:id/:day/pending", (req, res) => {
   });
 });
 
+app.put("/deletedb", (req, res) => {
+  userSchema.deleteMany({}).then(() => {
+    res.send({});
+  });
+});
 //server
 app.listen(3000, () => {
   console.log("Server is listening on port http://localhost:3000");
