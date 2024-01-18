@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const userSchema = require("./api/models/userSchema");
-
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
