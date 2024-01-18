@@ -5,7 +5,7 @@ const userSchema = require("./api/models/userSchema");
 const app = express();
 
 const corsOptions = {
-  origin: "https://action-atlas.vercel.app/",
+  origin: "https://action-atlas.vercel.app",
   optionsSuccessStatus: 200,
 };
 
