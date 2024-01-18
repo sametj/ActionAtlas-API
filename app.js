@@ -2,21 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const userSchema = require("./api/models/userSchema");
-const bodyParser = require("body-parser");
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
   next();
 });
 
@@ -70,8 +61,6 @@ app.post("/user/register", (req, res) => {
         password: req.body.password,
         todos: [],
       });
-      newUser.save();
-      userSchema.create(newUser);
       res.status(201).send({
         sucess: "User created",
         id: newUser.id,
@@ -81,6 +70,7 @@ app.post("/user/register", (req, res) => {
       res.send({ error: "User already exists" });
     }
   });
+  newUser.save();
 });
 
 //login
