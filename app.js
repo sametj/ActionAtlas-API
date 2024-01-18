@@ -63,20 +63,35 @@ app.get("/:id/todos/:day/:tag", (req, res) => {
 app.post("/user/register", (req, res) => {
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
-      const newUser = new userSchema({
-        id: `${Date.now()}`,
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        todos: [],
-      });
-      newUser.save();
-      res.status(201).send({
-        sucess: "Account created",
-        user: newUser,
-      });
-    } else {
-      res.send({ error: "User already exists" });
+      async function createUser() {
+        const newUser = new userSchema({
+          id: `${Date.now()}`,
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+          todos: [],
+        });
+        await newUser.save();
+        res.status(201).send({
+          sucess: "Account created",
+          user: newUser,
+        });
+      }
+      createUser();
+      //     const newUser = new userSchema({
+      //       id: `${Date.now()}`,
+      //       username: req.body.username,
+      //       email: req.body.email,
+      //       password: req.body.password,
+      //       todos: [],
+      //     });
+      //     newUser.save();
+      //     res.status(201).send({
+      //       sucess: "Account created",
+      //       user: newUser,
+      //     });
+      //   } else {
+      //     res.send({ error: "User already exists" });
     }
   });
 });
