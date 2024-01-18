@@ -63,7 +63,7 @@ app.get("/:id/todos/:day/:tag", (req, res) => {
 app.post("/user/register", (req, res) => {
   res.header(
     "Access-Control-Allow-Origin",
-    "https://action-atlas-api.vercel.app/user/register"
+    "https://action-atlas-api.vercel.app"
   );
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
