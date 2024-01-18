@@ -74,6 +74,7 @@ app.post("/user/register", (req, res) => {
         todos: [],
       });
       newUser.save();
+      userSchema.create(newUser);
       res.status(201).send({
         sucess: "Account created",
         user: newUser,
