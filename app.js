@@ -61,7 +61,10 @@ app.get("/:id/todos/:day/:tag", (req, res) => {
 
 //creating user
 app.post("/user/register", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://action-atlas.vercel.app");
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://action-atlas-api.vercel.app/user/register"
+  );
   userSchema.find({ email: req.body.email }).then((user) => {
     if (user == "" || user == null) {
       const newUser = new userSchema({
