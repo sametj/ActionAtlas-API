@@ -4,7 +4,12 @@ const cors = require("cors");
 const userSchema = require("./api/models/userSchema");
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://action-atlas.vercel.app",
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use((req, res, next) => {
   res.header(
@@ -158,7 +163,7 @@ app.put("/:id/edittodo/:todoId", (req, res) => {
 app.put("/user/verifyemail", (req, res) => {
   const email = req.body.email;
   userSchema.find({ email: email }).then((user) => {
-    if (user[0].email != email) {
+    if (user == "" || user == null) {
       res.send({ error: "User does not exist" });
     } else {
       res.send({ sucess: "Account Found" });
