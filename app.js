@@ -69,9 +69,7 @@ app.post("/user/register", (req, res) => {
       });
       newUser.save();
       res.status(201).send({
-        sucess: "User created",
-        id: newUser.id,
-        username: newUser.username,
+        newUser,
       });
     } else {
       res.send({ error: "User already exists" });
