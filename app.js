@@ -218,11 +218,11 @@ app.get("/:id/:day/pending", (req, res) => {
   });
 });
 
-app.put("/deletedb", (req, res) => {
-  userSchema.deleteMany({}).then(() => {
-    res.send({});
-  });
-});
+// app.put("/deletedb", (req, res) => {
+//   userSchema.deleteMany({}).then(() => {
+//     res.send({});
+//   });
+// });
 //server
 app.listen(3000, () => {
   console.log("Server is listening on port http://localhost:3000");
